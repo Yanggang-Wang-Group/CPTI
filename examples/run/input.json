@@ -1,0 +1,55 @@
+{
+	"_comment":"spcify the direction of temp path",
+	"work_path":"./temp",
+	"_comment":"spcify the max iteration",
+	"max_iter":5,
+	"vasp_file_location":"./vaspfile",
+	"_comment":"spcify the convergence scale",
+	"convergence":0.05,
+	"_comment":"Vs PZC",
+	"set_potential":0,
+	"_comment":"set the step of Thermodynamic Integration",
+	"TI_step":5000,
+	"iter_MD":{
+		"queue_system":"PBS",
+		"queue_type": "short",
+		"numb_node" :1 ,
+		"core_per_task": 24,
+		"core_per_node": 96,
+		"set_time": "96:0:0",
+     		"set_mem": 0,
+		"_source_list": ["/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/bin/compilervars.sh -arch intel64 -platform linux",
+			"/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/mpi/intel64/bin/mpivars.sh intel64"],
+		"vaspsol_path":"vasp_gam",
+		"module_list": ["intel","vasp544"]
+	},
+	"iter_bader":{
+		"_comment":"baderfile number = floor((nsw in INCAR-relaxtion_step)/interval)"
+		"relaxtion_step":800,
+		"interval":40,
+		"bader_each_file":5,
+		"queue_system":"PBS",
+		"queue_type": "short",
+		"numb_node" :1 ,
+		"core_per_task": 24,
+		"core_per_node": 48,
+		"set_time": "24:0:0",
+     		"set_mem": 0,
+		"_source_list": ["/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/bin/compilervars.sh -arch intel64 -platform linux",
+			"/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/mpi/intel64/bin/mpivars.sh intel64"],
+		"vaspsol_path":"vasp_gam",
+		"module_list": ["intel","vaspsol544"]
+
+	},
+	"V_calculate":{
+		"_comment":"this could refer to any standard(Vs RHE or SHE or 0)",
+		"PZC":"0.00",
+		"_comment":"the unit of capacitance is μF/cm^{2}",
+		"Capacitance":"21",
+		"_comment":"specify the surface atoms list",
+		"_comment":"you can enter the atom like this : 1-60,128-130,131-131",
+		"surface_atom":"1-54,56-60"
+
+	}
+ 
+}

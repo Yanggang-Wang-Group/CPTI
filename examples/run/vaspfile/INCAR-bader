@@ -1,0 +1,66 @@
+SYSTEM = CO
+
+#################################start setting################################
+ISTART = 0        #startjob:0-new 1-continue 2-samecut                       #
+ICHARG = 2        #charge:1-file 2-atom 10-const                             #
+INIWAV = 1        #initial electr wf.:0-lowe 1-rand                        #
+##############################################################################
+ISPIN  = 1     #spin polarized calculation:2-yes 1-no       
+#FOR vaspsol
+LSOL = .TRUE.
+EB_k = 78.4
+NELECT=672
+LAMBDA_D_K=3.04
+###########################electronic relaxation##############################
+ENCUT  = 400      #                                                          #
+NELM   = 200      #max. number of electronic steps                           #
+NELMIN = 4        #min. number of electronic steps                           #
+EDIFF  = 1E-06    #stopping-criterion for electronic update                  #
+PREC   = Normal   #normal/accurate                                           # 
+LREAL  = Auto     #false-reciprocal space,                                   #
+                  #ture-real space:for more than 20 atoms, auto              #
+#######################ionic relaxation#######################################
+EDIFFG = -0.02    #stopping-criterion for ionic update                       #
+NSW    = 0      #number of steps for ionic update                          #  
+IBRION = -1        #ionic relaxation method:                                  #
+                  #-1:single point energy cal.                               # 
+			      #0:MD simulation                                           #
+			      #1:quasi-Newton method.                                    #
+			      #2:cg for bad initial structure                            #
+			      #3:damped MD                                               #
+			      #5:calculated the vibrational frequencies NFREE = 2        #
+ISIF   = 2        #what to relax. 2-unchange cell 3-change everything        #
+ISYM   = 0        #symmetry: 0-non symmetry, 1-use symmetry for ultrasoft,   #
+                  #2-fast symmetry for PAW potential                         #
+POTIM  = 0.1      #time-step for ionic-motion  
+##############################smearing method#################################
+ISMEAR = 0       #-1-fermi-smearing,0-gaussian smearing,-2..-5              #
+                  #dos and total energy in bulk materials-no metals:-5       #
+			      #phonon frequence:>0                                       #
+			      #semiconductors and insulators:0-large cell- or -5         #
+			      #metals relaxation:=1,=2                                   #
+SIGMA  = 0.1      #ISMEAR = 0, SIGMA  = 0.05                                 #
+                  #metals:0.2       
+##############################################################################
+
+###############################mixing method##################################
+#ADDGRID = .TRUE.                                                            ##
+ALGO = Very Fast                                                               #
+#AMIX=0.1                                                                    #
+#BMIX=0.001                                                                  #
+#AMIX_MAG=0.4                                                                #
+#BMIX_MAG=0.001
+LPLANE = .TRUE.
+LSCALU = .FALSE.
+NCORE = 12
+NSIM   = 4                                                              #
+
+###################################out put####################################
+LWAVE  = .FALSE.  #WAVECAR                                                   #
+LCHARG = .TRUE.  #CHGCAR  CHG                                               #
+LAECHG = .TRUE.
+LVTOT  = .FALSE.  #LOCPOT local potential                                    #
+LELF   = .FALSE.  #ELFCAR                                                    #
+############################################################################## 	 
+IVDW= 12 
+#IALGO=48
