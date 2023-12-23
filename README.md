@@ -7,7 +7,7 @@ CPTI-generator only supports Python 3.6 and above.
 
 One can download the source code of cpti by
 ```bash
-git clone https://github.com/343333333/cpti-generator.git
+git clone https://github.com/Yanggang-Wang-Group/CPTI.git
 ```
 then you may install CPTI-generator easily by:
 ```bash
