@@ -49,7 +49,7 @@ def init_MD(iter_num,para):
 		last_iter_path=make_iter_path(int(iter_num)-1,raw_path)
 		last_step_path=make_step_path(last_iter_path,'init_MD')
 		os.system("cp %s/CONTCAR %s/POSCAR" %(last_step_path,step_path) )
-	else : raise Exception('vasp file cannot find please check again')
+	else : raise Exception('vasp file cannot find ,please check again')
 	para['Nset'] += para['corr']
 	keyword_replace('NELECT', str(para['Nset']), os.path.join(step_path,'INCAR'))
 	keyword_replace('LBLUEOUT', '.TRUE.', os.path.join(step_path,'INCAR'))
@@ -68,7 +68,11 @@ def init_bader(iter_num,para):
 	sub_para=para['iter_bader']
 	bader_each_file=sub_para['bader_each_file']
 	relax_step=sub_para['relaxtion_step']
-	interval=sub_para['interval']
+	TI_tag_path=os.path.join(os.path.join(raw_path,gene_path_name(iter_num-1)),'V_calculate/TI_tag')
+	if not os.path.exists(TI_tag_path):
+		interval=sub_para['interval']
+	else:
+		interval=sub_para['interval-TI']
 	iter_path=os.path.join(raw_path,gene_path_name(iter_num))
 	step_path=make_step_path(iter_path,'init_bader')
 	NSW=INCAR_read('NSW')
@@ -114,14 +118,17 @@ def init_bader(iter_num,para):
 		os.chdir(os.path.dirname(os.getcwd()))
 def do_ti(iter_num,para):
 	raw_path=para['work_path']
+	iter_path=make_iter_path(iter_num,raw_path)
+	raw_path=para['work_path']
 	iter_path=os.path.join(raw_path,gene_path_name(iter_num))
-	POSCAR_path=os.path.join(iter_path,'init_MD')
-	TI_path=make_step_path(raw_path,'TI_calculation')
+	last_iter_path=os.path.join(raw_path,gene_path_name(iter_num-1))
+	POSCAR_path=os.path.join(last_iter_path,'init_MD')
+	TI_path=make_step_path(iter_path,'init_MD')
 	os.chdir(TI_path)
 	try:
 		os.system('cp %s/CONTCAR %s/POSCAR '%(POSCAR_path,TI_path))
-		os.system('cp %s/KPOINTS %s/POTCAR %s/INCAR %s/ICONST %s/ '\
-			%(POSCAR_path,POSCAR_path,POSCAR_path,POSCAR_path,TI_path))
+		os.system('cp %s/KPOINTS %s/POTCAR %s/INCAR %s/ICONST %s/INCAR-bader %s/ '\
+			%(POSCAR_path,POSCAR_path,POSCAR_path,POSCAR_path,POSCAR_path,TI_path))
 	except:
 		print('the MD_traj does not exists in the path %s\n plz check your file \n'%(POSCAR_path))
 		raise Exception(' ')
@@ -130,8 +137,8 @@ def do_ti(iter_num,para):
 	job_sub('iter_MD',para,iter_num)
 	while not finish_check() :
 		time.sleep(60)
-	dlog.info('All the mission have been done, plz check it out.\n God blessed you !')
-	os._exit(0) 
+
+
 
 def V_calculate(iter_num,para):
 	raw_path=para['work_path']
@@ -139,6 +146,7 @@ def V_calculate(iter_num,para):
 	iter_path=os.path.join(raw_path,gene_path_name(iter_num))
 	bader_path=os.path.join(iter_path,'init_bader')
 	step_path=make_step_path(iter_path,'V_calculate')
+	TI_tag_path=os.path.join(os.path.join(raw_path,gene_path_name(iter_num-1)),'V_calculate/TI_tag')
 	Capacitance=float(sub_para['Capacitance'])
 	PZC=float(sub_para['PZC'])
 	surface_atom=sub_para['surface_atom']
@@ -147,14 +155,19 @@ def V_calculate(iter_num,para):
 	#else:
 	V_ave=get_average(V_cal(bader_path,Capacitance,PZC,surface_atom))
 	if abs(V_ave-float(para['set_potential'])) <float(para['convergence']):
-		dlog.info('current V_cal is %f V, reached the precision of setting %s'%(V_ave,para['convergence']))
-		dlog.info('done!')
-		do_ti(iter_num,para)
-		os._exit(0) 
+		os.chdir(step_path)
+		if not os.path.exists(TI_tag_path):
+			dlog.info('current potential is %f V, reached the precision of setting %s'%(V_ave,para['convergence']))
+			dlog.info('start to do TI!')
+			os.system('touch TI_tag')
+		else:
+			dlog.info('after bader checking, the average potential has reached the convergence, workflow finish.')
+			dlog.info('current potential is %f V, CPTI reach the precision of setting %s'%(V_ave,para['convergence']))
+			os._exit(0) 
 
 	elif iter_num==para['max_iter']:
 		dlog.info('reach the max iter times , quitting.....')
-		dlog.info('the V value may not converge, plz check it out')
+		dlog.info('the V value may not converge, please check your iteration file')
 		dlog.info('done!')
 		os._exit(0) 
 
@@ -170,7 +183,7 @@ def run_iter(param_file):
 		with open (param_file, 'r') as fp :
 			para = json.load (fp)
 	except:
-		raise Exception('unreadfile input file , plz check it out')
+		raise Exception('unreadfile input file , please check your input')
 	os.chdir(para['vasp_file_location'])
 	recordfile=os.path.join(para['work_path'],"step.record")
 	#restart module
@@ -184,24 +197,26 @@ def run_iter(param_file):
 			ii = vectors[-1][0]
 			record_step = vectors[-1][1]+1
 			restart=True
-		para['Nset'] = float(keyword_exract('NELECT',os.path.join(os.path.join(raw_path,gene_path_name(ii)),'init_MD/INCAR')))
-		dlog.info ("detected the record file , will restart from iter %s %s"%(ii,record_step))
+			para['Nset'] = float(keyword_exract('NELECT',os.path.join(os.path.join(raw_path,gene_path_name(ii)),'init_MD/INCAR')))
+		dlog.info ("detect the record file , CPTI will restart from iter %s %s"%(ii,record_step))
 	else:
 		ii = 0
 		para['Nset'] = float(V2N(para))
-	
-	##excated old NELECT
-	index=True
+	##excate old NELECT
 	max_tasks=3
+	index=True
 	while index:
 		for jj in range (max_tasks) :
 			if restart and jj<record_step:
 				continue
 			restart=False
-			if   jj == 0 :
-				step_log ("init_MD", ii, jj) 
-				step_rec(recordfile,ii,jj)
-				init_MD (ii, para)
+			if jj == 0 :
+				if os.path.exists(os.path.join(os.path.join(raw_path,gene_path_name(ii-1)),'V_calculate/TI_tag')):
+					do_ti(ii, para)
+				else:
+					step_log ("init_MD", ii, jj) 
+					step_rec(recordfile,ii,jj)
+					init_MD (ii, para)
 			elif jj == 1 :
 				step_log ("init_bader", ii, jj) 
 				step_rec(recordfile,ii,jj)

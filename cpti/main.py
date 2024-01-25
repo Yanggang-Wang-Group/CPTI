@@ -8,10 +8,10 @@ from cpti.generator.run import gene_run
 from cpti import info
 from cpti.collect.init_c import gene_c
 from cpti.collect.init_conf import init_conf
-__author__ = "Xinmao Lv"
-__copyright__ = "Copyright 2022, @TCCL"
+__author__ = "Hao Cao, Xinmao Lv"
+__copyright__ = "Copyright 2024, @TCCL"
 __maintainer__ = "Xinmao Lv"
-__email__ = ""
+__email__ = "12132772@mail.sustech.edu.cn"
 
 def main():
 	info()
