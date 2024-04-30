@@ -44,16 +44,19 @@ def sub_head_gene(res):
 	ret += "\n"
 	for ii in res['source_list'] :
 		ret += "source %s\n" %ii
+	for flag in res.get('custom_flags', []):
+		ret += '%s \n' % flag
+	ret += "\n"
 	ret += "\n"
 	return ret
 def sub_mission_gene(res,ret):
 	if res['snapshot_exacted']==0:
 		ret += 'if [ ! -f ./tag_finished ] ;then \n'
 		ret += 'mpiexec.hydra -machinefile $LSB_DJOB_HOSTFILE -np %d %s > stdout  2>&1 \n' %(
-			res['core_per_task'],res['vaspsol_path'])
+			res['core_per_task'],res['vasp_path'])
 		ret += 'if test $? -ne 0; then touch tag_failure; fi \n'
 		ret +='touch tag_finished\n'
-		ret += "fi"
+		ret += "fi\n"
 		ret += "\n"
 	return ret
 def bader_body_gene(res,file_name):
@@ -61,14 +64,14 @@ def bader_body_gene(res,file_name):
 	ret += 'if [ ! -f ./%s/tag_finished ] ;then \n'%file_name
 	ret += 'cd %s \n'%file_name
 	ret += 'mpiexec.hydra -machinefile $LSB_DJOB_HOSTFILE -np %d %s > stdout  2>&1 \n' %(
-		res['core_per_task'],res['vaspsol_path'])
+		res['core_per_task'],res['vasp_path'])
 	ret += 'if test $? -ne 0; then touch tag_failure; fi \n'
 	ret += 'chgsum.pl AECCAR0 AECCAR2 \n'
 	ret += 'bader CHGCAR -ref CHGCAR_sum \n'
 	ret += 'touch tag_finished\n'
 	ret += 'rm CHGCAR\n'
 	ret += 'cd .. \n'
-	ret += 'fi'
+	ret += 'fi\n'
 	ret += '\n'
 	return ret
 def LSF_tail_gene():

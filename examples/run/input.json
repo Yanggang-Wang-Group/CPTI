@@ -20,8 +20,9 @@
      		"set_mem": 0,
 		"_source_list": ["/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/bin/compilervars.sh -arch intel64 -platform linux",
 			"/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/mpi/intel64/bin/mpivars.sh intel64"],
-		"vaspsol_path":"vasp_gam",
-		"module_list": ["intel","vasp544"]
+		"vasp_path":"vasp_gam",
+		"_module_list": ["intel","vasp544"],
+		"custom_flags": ["ulimit -s unlimited"]
 	},
 	"iter_bader":{
 		"_comment":"baderfile number = floor((nsw in INCAR-relaxtion_step)/interval)"
@@ -37,9 +38,9 @@
      		"set_mem": 0,
 		"_source_list": ["/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/bin/compilervars.sh -arch intel64 -platform linux",
 			"/share/intel/2017u8/compilers_and_libraries_2017.8.262/linux/mpi/intel64/bin/mpivars.sh intel64"],
-		"vaspsol_path":"vasp_gam",
-		"module_list": ["intel","vaspsol544"]
-
+		"vasp_path":"vasp_gam",
+		"_module_list": ["intel","vaspsol544"],
+		"custom_flags": ["ulimit -s unlimited"]
 	},
 	"V_calculate":{
 		"_comment":"this could refer to any standard(Vs RHE or SHE or 0)",

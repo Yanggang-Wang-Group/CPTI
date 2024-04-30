@@ -1,6 +1,7 @@
 import os,json,time
 from cpti.dispatcher.LSF import LSF_sub,LSF_head_gene,LSF_body_gene,LSF_tail_gene
 from cpti.dispatcher.PBS import PBS_sub,PBS_head_gene,PBS_body_gene,PBS_tail_gene
+from cpti.dispatcher.Slurm import Slurm_sub,Slurm_head_gene,Slurm_body_gene,Slurm_tail_gene
 from cpti import dlog
 #from dispatcher.PBS import PBS_sub
 def sub_generator(sub_para):
@@ -8,25 +9,32 @@ def sub_generator(sub_para):
 		LSF_sub(sub_para)
 	elif sub_para['queue_system']=='PBS' :
 		PBS_sub(sub_para)
-
+	elif sub_para['queue_system']=='Slurm' :
+		Slurm_sub(sub_para)
 #####design for iter_bader#####
 def head_gene(sub_para):
 	if sub_para['queue_system']=='LSF' :
 		ret=LSF_head_gene(sub_para)
 	elif sub_para['queue_system']=='PBS' :
 		ret=PBS_head_gene(sub_para)
+	elif sub_para['queue_system']=='Slurm' :
+		ret=Slurm_head_gene(sub_para)
 	return ret
 def body_gene(file_name,sub_para):
 	if sub_para['queue_system']=='LSF' :
 		ret=LSF_body_gene(file_name,sub_para)
 	elif sub_para['queue_system']=='PBS' :
 		ret=PBS_body_gene(file_name,sub_para)
+	elif sub_para['queue_system']=='Slurm' :
+		ret=Slurm_body_gene(file_name,sub_para)
 	return ret
 def tail_gene(sub_para):
 	if sub_para['queue_system']=='LSF' :
 		ret=LSF_tail_gene()
 	elif sub_para['queue_system']=='PBS' :
 		ret=PBS_tail_gene()
+	elif sub_para['queue_system']=='Slurm' :
+		ret=Slurm_tail_gene()
 	return ret
 def do_sub(sub_para,dir_index):
 	if sub_para['queue_system']=='LSF' :
@@ -36,6 +44,10 @@ def do_sub(sub_para,dir_index):
 	elif sub_para['queue_system']=='PBS' :
 		os.chdir('./%s'%dir_index)
 		os.system('qsub -N %s  ./mission.sub & '%('cpti' ))
+		os.chdir(os.path.dirname(os.getcwd()))
+	elif sub_para['queue_system']=='Slurm' :
+		os.chdir('./%s'%dir_index)
+		os.system('sbatch ./mission.sub &')
 		os.chdir(os.path.dirname(os.getcwd()))
 def job_sub(job_type,para,iter_num,dir_num=1):
 	dir_format='%02d'

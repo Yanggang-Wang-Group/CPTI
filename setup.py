@@ -7,7 +7,7 @@ import setuptools
 
 #readme_file = path.join(path.dirname(path.abspath(__file__)), 'README.md')
 
-install_requires=['numpy>=1.14.3']
+install_requires=['numpy>=1.14.3','ase']
 
 setuptools.setup(
 	name=NAME,
