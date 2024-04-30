@@ -28,7 +28,8 @@
 		"_comment":"baderfile number = floor((nsw in INCAR-relaxtion_step)/interval)"
 		"relaxtion_step":800,
 		"interval":40,
-		"bader_each_file":5,
+		"interval-TI":400,
+		"bader_each_file":30,
 		"queue_system":"PBS",
 		"queue_type": "short",
 		"numb_node" :1 ,
