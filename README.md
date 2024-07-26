@@ -14,7 +14,7 @@ then you may install CPTI-generator easily by:
 cd cpti
 pip install --user .
 ```
-With this command, the dpgen executable is install to `$HOME/.local/bin/dpgen`. You may want to export the `PATH` by
+With this command, the dpgen executable is install to `$HOME/.local/bin/cpti`. You may want to export the `PATH` by
 ```bash
 export PATH=$HOME/.local/bin:$PATH
 ```
