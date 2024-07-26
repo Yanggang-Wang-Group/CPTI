@@ -25,7 +25,7 @@
 		"custom_flags": ["ulimit -s unlimited"]
 	},
 	"iter_bader":{
-		"_comment":"baderfile number = floor((nsw in INCAR-relaxtion_step)/interval)"
+		"_comment":"baderfile number = floor((nsw in INCAR-relaxtion_step)/interval)",
 		"relaxtion_step":800,
 		"interval":40,
 		"interval-TI":400,
