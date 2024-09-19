@@ -50,7 +50,10 @@ def new_POSCAR_gene(n,relaxtion_time,interval,NBLOCK,atom):
 		xyz_coor=XDAR_read(n,relaxtion_time,interval,NBLOCK).split("\n")
 		for i in range(len(xyz_coor)-1):
 			TF=TF_boy[i].split()
-			ret +=xyz_coor[i]+' '+TF[-3]+' '+TF[-2]+' '+TF[-1]+ '\n'
+			if len(TF) == 6:
+				ret +=xyz_coor[i]+' '+TF[-3]+' '+TF[-2]+' '+TF[-1]+ '\n'
+			elif len(TF) == 7:
+				ret +=xyz_coor[i]+' '+TF[-4]+' '+TF[-3]+' '+TF[-2]+' '+TF[-1]+ '\n'
 		ret=head+ret
 		return ret
 
