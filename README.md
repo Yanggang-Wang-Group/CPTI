@@ -25,6 +25,7 @@ cpti -h
 ## Workflows and usage
 CPTI-generator currently contains the two main functions:
 * `cpti run`: Main process of the Generator.
+* `cpti noderun` run cpti on the node, check `cpti.sh` for more details.
 * `cpti init_conf` : Generating a series of configuration along a reaction coordinate.
 For detailed usage and parameters, please check it out by `cpti run -h` and `cpti init_conf -h` in shell.
 ## Examples
