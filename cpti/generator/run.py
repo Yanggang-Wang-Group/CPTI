@@ -1,12 +1,9 @@
 import os
 import sys,re
 import argparse
-import glob
 import json
-import random
 import logging
 import logging.handlers
-import subprocess
 import time
 from cpti import dlog
 from cpti.generator.pathfinder import make_iter_path,make_step_path,gene_path_name,make_multi_path,make_path
@@ -35,7 +32,7 @@ def temp1(file):
 			if re.match(r'^NELECT',line):
 				value=line.split('=')[1].strip()
 				return value
-def init_MD(iter_num,para):
+def init_MD(iter_num,para,nodetag):
 	raw_path=para['work_path']
 	vasp_file=para['vasp_file_location']
 	set_potential=para['set_potential']
@@ -54,11 +51,11 @@ def init_MD(iter_num,para):
 	keyword_replace('NELECT', str(para['Nset']), os.path.join(step_path,'INCAR'))
 	keyword_replace('LBLUEOUT', '.TRUE.', os.path.join(step_path,'INCAR'))
 	dlog.info('iter.%03d init_MD is calculating' %iter_num)
-	job_sub('iter_MD',para,iter_num)
+	job_sub('iter_MD',para,iter_num,1,nodetag)
 	while not finish_check() :
 		time.sleep(60)
 	dlog.info('iter.%03d init_MD  finished' %iter_num)
-def init_bader(iter_num,para):
+def init_bader(iter_num,para,nodetag):
 	raw_path=para['work_path']
 	vasp_file=para['vasp_file_location']
 	iter_path=make_iter_path(iter_num,raw_path)
@@ -78,6 +75,9 @@ def init_bader(iter_num,para):
 	NSW=INCAR_read('NSW')
 	NBLOCK=INCAR_read('NBLOCK')
 	n_max=int((NSW-relax_step)/interval)
+	if nodetag:
+		bader_each_file = n_max + 1
+		dlog.info('work on node, bader_each_file will be neglected')
 	dir_max=int(ceil(n_max/bader_each_file))
 	atom=atom_num_get()
 	dir_index=0
@@ -89,10 +89,15 @@ def init_bader(iter_num,para):
 			sub_file_path=os.path.join(step_path, dir_format %dir_index)
 			bader_path=os.path.join(sub_file_path,dir_format %i)
 			make_path(bader_path)
-			with open(sub_file_path+'/mission.sub','a+') as fp :
-				fp.write(head_gene(sub_para))
-				fp.write(body_gene(dir_format %i ,sub_para))
-				fp.write(tail_gene(sub_para)) if (i+1)==n_max else 0
+			if not nodetag:
+				with open(sub_file_path+'/mission.sub','a+') as fp :
+					fp.write(head_gene(sub_para))
+					fp.write(body_gene(dir_format %i ,sub_para))
+					fp.write(tail_gene(sub_para)) if (i+1)==n_max else 0
+			else:
+				with open(sub_file_path+'/mission.sub','a+') as fp :	
+					fp.write(body_gene(dir_format %i ,sub_para))
+					fp.write(tail_gene(sub_para)) if (i+1)==n_max else 0					
 		else :
 			sub_file_path=os.path.join(step_path, dir_format %dir_index)
 			bader_path=os.path.join(sub_file_path,dir_format %i)
@@ -109,14 +114,14 @@ def init_bader(iter_num,para):
 	dlog.info('bader file generation complete' )
 	dlog.info('-----iter.%03d init_bader starts-----' %iter_num)
 	os.chdir(step_path)
-	job_sub('iter_bader',para,iter_num,dir_max)
+	job_sub('iter_bader',para,iter_num,dir_max,nodetag)
 	for i in range(dir_max) :
 		os.chdir(os.path.join(step_path,dir_format %i))
 		while not finish_check() :
 			time.sleep(30)
 		dlog.info('iter.%03d init_bader file_%02d finished' %(iter_num,i))
 		os.chdir(os.path.dirname(os.getcwd()))
-def do_ti(iter_num,para):
+def do_ti(iter_num,para,nodetag):
 	raw_path=para['work_path']
 	iter_path=make_iter_path(iter_num,raw_path)
 	raw_path=para['work_path']
@@ -134,10 +139,9 @@ def do_ti(iter_num,para):
 		raise Exception(' ')
 	keyword_replace('LBLUEOUT', '.TRUE.', os.path.join(TI_path,'INCAR'))
 	keyword_replace('NSW', str(para['TI_step']), os.path.join(TI_path,'INCAR'))
-	job_sub('iter_MD',para,iter_num)
+	job_sub('iter_MD',para,iter_num,1,nodetag)
 	while not finish_check() :
 		time.sleep(60)
-
 
 
 def V_calculate(iter_num,para):
@@ -146,6 +150,7 @@ def V_calculate(iter_num,para):
 	iter_path=os.path.join(raw_path,gene_path_name(iter_num))
 	bader_path=os.path.join(iter_path,'init_bader')
 	step_path=make_step_path(iter_path,'V_calculate')
+	V_path=os.path.join(os.path.join(raw_path,gene_path_name(iter_num)),'V_calculate')
 	TI_tag_path=os.path.join(os.path.join(raw_path,gene_path_name(iter_num-1)),'V_calculate/TI_tag')
 	Capacitance=float(sub_para['Capacitance'])
 	PZC=float(sub_para['PZC'])
@@ -153,7 +158,11 @@ def V_calculate(iter_num,para):
 	#if sub_para['is_metal_surf']:
 		#V_ave=0.5*get_average(V_cal(bader_path,Capacitance,PZC,surface_atom))
 	#else:
-	V_ave=get_average(V_cal(bader_path,Capacitance,PZC,surface_atom))
+	V_list=V_cal(bader_path,Capacitance,PZC,surface_atom)
+	with open(V_path+'/V.dat','a+') as fp :
+		for i in range(len(V_list)):
+			fp.write( str(i+1) + ',' + str(V_list[i]) + '\n' )
+	V_ave=get_average(V_list)
 	if abs(V_ave-float(para['set_potential'])) <float(para['convergence']):
 		os.chdir(step_path)
 		if not os.path.exists(TI_tag_path):
@@ -178,7 +187,7 @@ def V_calculate(iter_num,para):
 		dlog.info('the NELECT correction is %f'%Ncorr)
 		para['corr']=Ncorr
 
-def run_iter(param_file): 
+def run_iter(param_file,nodetag): 
 	try:
 		with open (param_file, 'r') as fp :
 			para = json.load (fp)
@@ -212,15 +221,15 @@ def run_iter(param_file):
 			restart=False
 			if jj == 0 :
 				if os.path.exists(os.path.join(os.path.join(raw_path,gene_path_name(ii-1)),'V_calculate/TI_tag')):
-					do_ti(ii, para)
+					do_ti(ii, para,nodetag)
 				else:
 					step_log ("init_MD", ii, jj) 
 					step_rec(recordfile,ii,jj)
-					init_MD (ii, para)
+					init_MD (ii, para,nodetag)
 			elif jj == 1 :
 				step_log ("init_bader", ii, jj) 
 				step_rec(recordfile,ii,jj)
-				init_bader (ii, para)
+				init_bader (ii, para,nodetag)
 			elif jj == 2 :
 				step_log ("V_calculate", ii, jj)
 				step_rec(recordfile,ii,jj)
@@ -229,8 +238,15 @@ def run_iter(param_file):
 def gene_run(args) :
 	if args.PARAM :
 		dlog.info ("start running")
-		run_iter (args.PARAM)
+		run_iter (args.PARAM,False)
 		dlog.info ("finished")
+
+def gene_noderun(args) :
+	if args.PARAM :
+		dlog.info ("start running")
+		run_iter (args.PARAM,True)
+		dlog.info ("finished")
+
 def _main () :
 	parser = argparse.ArgumentParser()
 	parser.add_argument("PARAM", type=str,

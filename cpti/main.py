@@ -4,7 +4,7 @@ import argparse
 import sys,os
 import itertools
 import logging
-from cpti.generator.run import gene_run
+from cpti.generator.run import gene_run,gene_noderun
 from cpti import info
 from cpti.collect.init_c import gene_c
 from cpti.collect.init_conf import init_conf
@@ -33,6 +33,14 @@ def main():
 						help="json format file which should contains all the para that the iteration needs.")
 	parser_run.set_defaults(func=gene_run)
 
+	#noderun
+	parser_noderun = subparsers.add_parser(
+		"noderun",
+		help="run in the node")	
+	parser_noderun.add_argument('PARAM', type=str)
+	parser_noderun.set_defaults(func=gene_noderun)
+	
+	
 	# init_c
 	#under constrction
 	parser_initc = subparsers.add_parser(

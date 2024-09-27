@@ -61,8 +61,8 @@ def bader_body_gene(res,file_name):
 	ret += 'mpiexec.hydra -machinefile $PBS_NODEFILE -np %d %s > stdout 2>&1\n' %(
 		res['core_per_task'],res['vasp_path'])
 	ret += 'if test $? -ne 0; then touch tag_failure; fi \n'
-	ret += 'chgsum.pl AECCAR0 AECCAR2 \n'
-	ret += 'bader CHGCAR -ref CHGCAR_sum \n'
+	ret += 'chgsum.pl AECCAR0 AECCAR2 >> stdout 2>&1 \n'
+	ret += 'bader CHGCAR -ref CHGCAR_sum  >> stdout 2>&1 \n'
 	ret += 'touch tag_finished\n'
 	ret += 'rm CHGCAR\n'
 	ret += 'cd .. \n'
