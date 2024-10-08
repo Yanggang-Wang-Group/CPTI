@@ -1,9 +1,11 @@
-import os 
+import os
+import os.path 
 import numpy as np 
 import fileinput
 import re
 import glob
 from cpti.generator.iter_bader import atom_num_get
+from cpti.generator.generator import keyword_exract
 def statelem():
 	file=fileinput.FileInput('POSCAR')
 	for line in file:
@@ -113,12 +115,52 @@ def V2N(para):
 	return (Nbias+ele_std)
 def V_cal(step_path,Capacitance,PZC,surface_atom):
 	link=os.path.join(step_path,'[0-9][0-9]/[0-9][0-9]')
-	V_value=[]
+	V_value,bader_sur=[],[]
 	for i in glob.glob(link):
 		os.chdir(i)
 		element,index=statelem()
 		atomnum=sort(surface_atom)
 		zval=getzval(element)
-		bader_sur=calele(atomnum,zval,element,index)
-		V_value.append(Ucalc(bader_sur,PZC,Capacitance))
-	return V_value
+		bader_sur1 = calele(atomnum,zval,element,index)
+		bader_sur.append(bader_sur1)
+		V_value.append(Ucalc(bader_sur1,PZC,Capacitance))
+	return V_value,bader_sur
+
+def get_Nbias(para,iter_path):
+	MD_path = os.path.join(iter_path,'init_MD','INCAR')
+	element,index=statelem()
+	atomnum=range(1,atom_num_get()+1)
+	zval=getzval(element)
+	ele_std=cal_std(atomnum, zval, element, index)
+	N_now=float(keyword_exract('NELECT',MD_path))
+	N_bias = N_now - ele_std
+	return N_bias
+	
+
+def correction(V_true,V_cal,Capacitance,record_path,iternum):
+	bias,bader_sur = [],[]
+	with open(record_path,'r') as fp:
+		for line in fp:
+			temp = line.split()
+			bias.append(float(temp[0]))
+			bader_sur.append(float(temp[1]))
+	bias = np.array(bias)
+	bader_sur = np.array(bader_sur)
+	if iternum == 0:
+		b = 0
+		k = bader_sur[0] / bias[0]
+		R2 = 1
+	else:
+		fit = np.polyfit(bias,bader_sur,1)
+		k = fit[0]
+		b = fit[1]
+		linear = np.poly1d(fit)
+		bader_fit = linear(bias)
+		bader_mean = np.mean(bader_sur)
+		ss_res = np.sum((bader_sur - bader_fit) ** 2)
+		ss_tot = np.sum((bader_sur - bader_mean) ** 2)
+		R2 = 1 - (ss_res / ss_tot)
+	xyz=get_xyz()
+	Ndiff = (((V_true-V_cal)*Capacitance*xyz[0]*xyz[1]*1e-3)/1.6)
+	Ncorr = (Ndiff)/k
+	return Ncorr,k,b,R2

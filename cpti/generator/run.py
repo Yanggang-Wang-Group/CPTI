@@ -9,7 +9,7 @@ from cpti import dlog
 from cpti.generator.pathfinder import make_iter_path,make_step_path,gene_path_name,make_multi_path,make_path
 from cpti.generator.generator import step_rec,step_log,keyword_replace,keyword_exract
 from cpti.generator.iter_bader import INCAR_read,new_POSCAR_gene,atom_num_get
-from cpti.generator.V_cal import V_cal,get_xyz,V2N
+from cpti.generator.V_cal import V_cal,V2N,correction,get_Nbias
 from cpti.dispatcher.Dispatcher import job_sub,head_gene,body_gene,tail_gene
 from math import ceil
 
@@ -20,10 +20,7 @@ def get_average(list):
 	for item in list:
 		sum += item
 	return sum/len(list)
-def correction(V_true,V_cal,Capacitance):
-	xyz=get_xyz()
-	Ncorr=-(((V_true-V_cal)*Capacitance*xyz[0]*xyz[1]*1e-3)/1.6)
-	return Ncorr
+
 def temp1(file):
 	with open('%s'%file, 'r') as file:
 		# 逐行读取文件内容
@@ -155,14 +152,16 @@ def V_calculate(iter_num,para):
 	Capacitance=float(sub_para['Capacitance'])
 	PZC=float(sub_para['PZC'])
 	surface_atom=sub_para['surface_atom']
-	#if sub_para['is_metal_surf']:
-		#V_ave=0.5*get_average(V_cal(bader_path,Capacitance,PZC,surface_atom))
-	#else:
-	V_list=V_cal(bader_path,Capacitance,PZC,surface_atom)
-	with open(V_path+'/V.dat','a+') as fp :
+	V_list,bader_sur=V_cal(bader_path,Capacitance,PZC,surface_atom)
+	with open(os.path.join(V_path , 'V.dat'),'a+') as fp :
 		for i in range(len(V_list)):
 			fp.write( str(i+1) + ',' + str(V_list[i]) + '\n' )
 	V_ave=get_average(V_list)
+	bader_ave = get_average(bader_sur)
+	N_bias = get_Nbias(para,iter_path)
+	record_path = os.path.join(raw_path,'V.record')
+	with open(record_path,'a+') as fp :
+		fp.write( str(N_bias) + ' ' + str(bader_ave) + '\n' )
 	if abs(V_ave-float(para['set_potential'])) <float(para['convergence']):
 		os.chdir(step_path)
 		if not os.path.exists(TI_tag_path):
@@ -181,10 +180,11 @@ def V_calculate(iter_num,para):
 		os._exit(0) 
 
 	else:
-		Ncorr=correction(para['set_potential'],V_ave,Capacitance)
+		Ncorr,k,b,R2=correction(para['set_potential'],V_ave,Capacitance,record_path,iter_num)
 		dlog.info('iter %03d task V_calculate result in the V=%s ,recalulating......'%(iter_num,V_ave))
 		dlog.info('still not reach the setting V=%s ,recalulating......'%(para['set_potential']))
 		dlog.info('the NELECT correction is %f'%Ncorr)
+		dlog.info('the FIT Function is y = %f x + %f , R2 = %f' %(k,b,R2))
 		para['corr']=Ncorr
 
 def run_iter(param_file,nodetag): 
