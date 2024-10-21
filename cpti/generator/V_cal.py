@@ -80,6 +80,8 @@ def calele(atomnum, zval,element,index):
 	num_elem=np.zeros(len(element))
 	while i < len(atomnum):
 		if atomnum[i] <= index[element[j]]:
+			print(atomnum[i])
+			print(index[element[j]])
 			num_elem[j] += 1
 			i += 1
 		else:
