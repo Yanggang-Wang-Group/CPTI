@@ -57,49 +57,15 @@ def cal_std(atomnum, zval,element,index):
 	num_elem=np.zeros(len(element))
 	while i < len(atomnum):
 		if atomnum[i] <= index[element[j]]:
-			print(atomnum[i])
-			print(index[element[j]])
 			num_elem[j] += 1
 			i += 1
 		else:
 			j += 1
-
-	# for i in range(0,len(atomnum)):
-	# 	if atomnum[i] <= index[element[j]]:
-	# 		num_elem[j]+=1
-	# 	else:
-	# 		j+=1
-	# 		num_elem[j]+=1
-
 	for i in range(0,len(element)):
 		ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
 	return ele_std
 def calele(atomnum, zval,element,index):
-	# elem_std=[]
-	# ele_std=0
-	# ele_bdr=0
-	# i,j=0,0
-	# num_elem=np.zeros(len(element))
-	# while i < len(atomnum):
-	# 	if atomnum[i] <= index[element[j]]:
-	# 		print(atomnum[i])
-	# 		print(index[element[j]])
-	# 		num_elem[j] += 1
-	# 		i += 1
-	# 	else:
-	# 		j += 1
-
-	# # for i in range(0,len(atomnum)):
-	# # 	if atomnum[i] <= index[element[j]]:
-	# # 		num_elem[j]+=1
-	# # 	else:
-	# # 		j+=1
-	# # 		num_elem[j]+=1
-
-	# print(num_elem)
-	# for i in range(0,len(element)):
-	# 	ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
-	# 	print(ele_std)
+	ele_bdr=0
 	ele_std=cal_std(atomnum, zval, element, index)
 	file=fileinput.input('ACF.dat')
 	for line in file:
