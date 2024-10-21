@@ -153,6 +153,7 @@ def V_calculate(iter_num,para):
 	PZC=float(sub_para['PZC'])
 	surface_atom=sub_para['surface_atom']
 	V_list,bader_sur=V_cal(bader_path,Capacitance,PZC,surface_atom)
+	print(surface_atom)
 	with open(os.path.join(V_path , 'V.dat'),'a+') as fp :
 		for i in range(len(V_list)):
 			fp.write( str(i+1) + ',' + str(V_list[i]) + '\n' )
