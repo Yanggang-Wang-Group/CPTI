@@ -81,6 +81,7 @@ def calele(atomnum, zval,element,index):
 	for line in file:
 		if ((fileinput.lineno()-2) in atomnum):
 			temp=np.asarray(line.split(),dtype='float64')
+			print(temp[4])
 			ele_bdr=ele_bdr+temp[4]
 	bader=ele_std-ele_bdr
 	file.close()
@@ -99,7 +100,6 @@ def get_xyz():
 def Ucalc(bader_sur,PZC:float=0.0,C:float=21.0):
 	xyz=np.array([0,0,0],dtype='float64')
 	xyz=get_xyz()
-	print(xyz)
 	C=1/C*pow(10,2)
 	p=16*bader_sur/(xyz[0]*xyz[1])
 	return C*p+PZC
@@ -121,7 +121,11 @@ def V_cal(step_path,Capacitance,PZC,surface_atom):
 		os.chdir(i)
 		element,index=statelem()
 		atomnum=sort(surface_atom)
+		print(atomnum)
 		zval=getzval(element)
+		print(zval)
+		print(element)
+		print(index)
 		bader_sur1 = calele(atomnum,zval,element,index)
 		print(bader_sur1)
 		bader_sur.append(bader_sur1)
