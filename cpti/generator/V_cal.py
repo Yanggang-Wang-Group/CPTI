@@ -1,3 +1,4 @@
+from ast import Num
 import os
 import os.path 
 import numpy as np 
@@ -52,15 +53,23 @@ def sort(atomnum):
 def cal_std(atomnum, zval,element,index):
 	elem_std=[]
 	ele_std=0
-	j=0
+	i,j=0,0
 	num_elem=np.zeros(len(element))
-	for i in range(0,len(atomnum)):
+	while i < len(atomnum):
 		if atomnum[i] <= index[element[j]]:
-			num_elem[j]+=1
+			num_elem[j] += 1
+			i += 1
 		else:
-			j+=1
-			i-=1
-			# num_elem[j]+=1
+			j += 1
+			i -= 1
+
+	# for i in range(0,len(atomnum)):
+	# 	if atomnum[i] <= index[element[j]]:
+	# 		num_elem[j]+=1
+	# 	else:
+	# 		j+=1
+	# 		num_elem[j]+=1
+
 	for i in range(0,len(element)):
 		ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
 	return ele_std
