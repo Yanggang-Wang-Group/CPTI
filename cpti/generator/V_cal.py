@@ -112,7 +112,6 @@ def V_cal(step_path,Capacitance,PZC,surface_atom):
 		atomnum=sort(surface_atom)
 		zval=getzval(element)
 		bader_sur1 = calele(atomnum,zval,element,index)
-		print(bader_sur1)
 		bader_sur.append(bader_sur1)
 		V_value.append(Ucalc(bader_sur1,PZC,Capacitance))
 	return V_value,bader_sur
