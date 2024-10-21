@@ -59,7 +59,8 @@ def cal_std(atomnum, zval,element,index):
 			num_elem[j]+=1
 		else:
 			j+=1
-			num_elem[j]+=1
+			i-=1
+			# num_elem[j]+=1
 	for i in range(0,len(element)):
 		ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
 	return ele_std
