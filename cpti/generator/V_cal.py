@@ -61,7 +61,6 @@ def cal_std(atomnum, zval,element,index):
 			i += 1
 		else:
 			j += 1
-			i -= 1
 
 	# for i in range(0,len(atomnum)):
 	# 	if atomnum[i] <= index[element[j]]:
@@ -85,7 +84,6 @@ def calele(atomnum, zval,element,index):
 			i += 1
 		else:
 			j += 1
-			i -= 1
 
 	# for i in range(0,len(atomnum)):
 	# 	if atomnum[i] <= index[element[j]]:
