@@ -75,8 +75,10 @@ def calele(atomnum, zval,element,index):
 		else:
 			j+=1
 			num_elem[j]+=1
+	print(num_elem)
 	for i in range(0,len(element)):
 		ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
+		print(ele_std)
 	file=fileinput.input('ACF.dat')
 	for line in file:
 		if ((fileinput.lineno()-2) in atomnum):
