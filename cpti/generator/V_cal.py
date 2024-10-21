@@ -57,6 +57,8 @@ def cal_std(atomnum, zval,element,index):
 	num_elem=np.zeros(len(element))
 	while i < len(atomnum):
 		if atomnum[i] <= index[element[j]]:
+			print(atomnum[i])
+			print(index[element[j]])
 			num_elem[j] += 1
 			i += 1
 		else:
@@ -73,36 +75,36 @@ def cal_std(atomnum, zval,element,index):
 		ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
 	return ele_std
 def calele(atomnum, zval,element,index):
-	elem_std=[]
-	ele_std=0
-	ele_bdr=0
-	i,j=0,0
-	num_elem=np.zeros(len(element))
-	while i < len(atomnum):
-		if atomnum[i] <= index[element[j]]:
-			print(atomnum[i])
-			print(index[element[j]])
-			num_elem[j] += 1
-			i += 1
-		else:
-			j += 1
-
-	# for i in range(0,len(atomnum)):
+	# elem_std=[]
+	# ele_std=0
+	# ele_bdr=0
+	# i,j=0,0
+	# num_elem=np.zeros(len(element))
+	# while i < len(atomnum):
 	# 	if atomnum[i] <= index[element[j]]:
-	# 		num_elem[j]+=1
+	# 		print(atomnum[i])
+	# 		print(index[element[j]])
+	# 		num_elem[j] += 1
+	# 		i += 1
 	# 	else:
-	# 		j+=1
-	# 		num_elem[j]+=1
+	# 		j += 1
 
-	print(num_elem)
-	for i in range(0,len(element)):
-		ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
-		print(ele_std)
+	# # for i in range(0,len(atomnum)):
+	# # 	if atomnum[i] <= index[element[j]]:
+	# # 		num_elem[j]+=1
+	# # 	else:
+	# # 		j+=1
+	# # 		num_elem[j]+=1
+
+	# print(num_elem)
+	# for i in range(0,len(element)):
+	# 	ele_std=ele_std+num_elem[i]*int(float(zval[element[i]]))
+	# 	print(ele_std)
+	ele_std=cal_std(atomnum, zval, element, index)
 	file=fileinput.input('ACF.dat')
 	for line in file:
 		if ((fileinput.lineno()-2) in atomnum):
 			temp=np.asarray(line.split(),dtype='float64')
-			print(temp[4])
 			ele_bdr=ele_bdr+temp[4]
 	bader=ele_std-ele_bdr
 	file.close()
@@ -142,11 +144,7 @@ def V_cal(step_path,Capacitance,PZC,surface_atom):
 		os.chdir(i)
 		element,index=statelem()
 		atomnum=sort(surface_atom)
-		print(atomnum)
 		zval=getzval(element)
-		print(zval)
-		print(element)
-		print(index)
 		bader_sur1 = calele(atomnum,zval,element,index)
 		print(bader_sur1)
 		bader_sur.append(bader_sur1)
