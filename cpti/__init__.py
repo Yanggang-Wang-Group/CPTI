@@ -36,9 +36,4 @@ def info():
 	print()
 
 	# reference
-	print("""Reference
-------------
-Please cite:
-...
-------------
-""")
+	print("Please cite: J. Phys. Chem. Lett. 2024, 15, 5, 1314–1320")
