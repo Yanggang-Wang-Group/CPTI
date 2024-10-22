@@ -12,7 +12,7 @@ git clone https://github.com/Yanggang-Wang-Group/CPTI.git
 then you may install CPTI-generator easily by:
 ```bash
 cd cpti
-pip install --user .
+python setup.py install
 ```
 With this command, the CPTI-gen executable is install to `$HOME/.local/bin/cpti`. You may want to export the `PATH` by
 ```bash
