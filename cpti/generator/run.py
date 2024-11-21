@@ -166,7 +166,7 @@ def V_calculate(iter_num,para):
 		os.chdir(step_path)
 		if not os.path.exists(TI_tag_path):
 			dlog.info('current potential is %f V, reached the precision of setting %s'%(V_ave,para['convergence']))
-			dlog.info('start to do TI!')
+			dlog.info('start to do final sampling!')
 			os.system('touch TI_tag')
 		else:
 			dlog.info('after bader checking, the average potential has reached the convergence, workflow finish.')
