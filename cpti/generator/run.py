@@ -47,7 +47,7 @@ def init_MD(iter_num,para,nodetag):
 	para['Nset'] += para['corr']
 	keyword_replace('NELECT', str(para['Nset']), os.path.join(step_path,'INCAR'))
 	keyword_replace('LBLUEOUT', '.TRUE.', os.path.join(step_path,'INCAR'))
-	dlog.info('iter.%03d init_MD is calculating' %iter_num)
+	dlog.info('iter.%03d init_MD is running' %iter_num)
 	job_sub('iter_MD',para,iter_num,1,nodetag)
 	while not finish_check() :
 		time.sleep(60)
