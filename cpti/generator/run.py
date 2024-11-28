@@ -125,7 +125,7 @@ def do_ti(iter_num,para,nodetag):
 	iter_path=os.path.join(raw_path,gene_path_name(iter_num))
 	last_iter_path=os.path.join(raw_path,gene_path_name(iter_num-1))
 	POSCAR_path=os.path.join(last_iter_path,'init_MD')
-	TI_path=make_step_path(iter_path,'init_MD')
+	TI_path=make_step_path(iter_path,'Final_sampling')
 	os.chdir(TI_path)
 	try:
 		os.system('cp %s/CONTCAR %s/POSCAR '%(POSCAR_path,TI_path))
