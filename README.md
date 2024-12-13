@@ -12,7 +12,7 @@ git clone https://github.com/Yanggang-Wang-Group/CPTI.git
 then you may install CPTI-generator easily by:
 ```bash
 cd CPTI
-python setup.py install
+pip install .
 ```
 To test if the installation is successful, you may execute
 ```bash
