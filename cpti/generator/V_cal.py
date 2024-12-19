@@ -139,7 +139,7 @@ def correction(V_true,V_cal,Capacitance,record_path,iternum):
 	if iternum == 0 or iternum == 1:
 		b = 0
                 try:
-		   k = para['init_k']
+		   k = float(sub_para['init_k'])
 		   dlog.info("User defined init_k:%f"(k))
 		except:
 			k = bader_sur[0] / bias[0]
