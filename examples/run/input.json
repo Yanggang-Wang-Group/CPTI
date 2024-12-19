@@ -45,12 +45,13 @@
 	},
 	"V_calculate":{
 		"_comment":"this could refer to any standard(Vs RHE or SHE or 0)",
-		"PZC":"0.00",
+		"PZC": 0.00,
 		"_comment":"the unit of capacitance is μF/cm^{2}",
-		"Capacitance":"21",
+		"Capacitance": 21,
 		"_comment":"specify the surface atoms list",
 		"_comment":"you can enter the atom like this : 1-60,128-130,131-131",
-		"surface_atom":"1-54,56-60"
+		"surface_atom":"1-54,56-60",
+		"init_k": 1.0
 
 	}
  
