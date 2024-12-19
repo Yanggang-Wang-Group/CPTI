@@ -136,10 +136,14 @@ def correction(V_true,V_cal,Capacitance,record_path,iternum):
 			bader_sur.append(float(temp[1]))
 	bias = np.array(bias)
 	bader_sur = np.array(bader_sur)
-	if iternum == 0:
+	if iternum == 0 or iternum == 1:
 		b = 0
-		k = bader_sur[0] / bias[0]
-		R2 = 1
+                try:
+		   k = para['init_k']
+		   dlog.info("User defined init_k:%f"(k))
+		except:
+			k = bader_sur[0] / bias[0]
+			R2 = 1
 	else:
 		fit = np.polyfit(bias,bader_sur,1)
 		k = fit[0]
